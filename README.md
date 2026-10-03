@@ -26,10 +26,14 @@ Maskowanie dotyczy tylko tego, co widać na ekranie. Oryginał zostaje w histori
 Wymaga Claude Code z obsługą modów (testowane na 2.1.288).
 
 ```sh
-git clone https://github.com/hugo88/claude-code-recording-mode ~/.claude/mods/recording-mode
+git clone https://github.com/hugo88/claude-code-recording-mode
+cd claude-code-recording-mode
+./install.sh            # testy, potem kopia do ~/.claude/mods/recording-mode
 ```
 
-Dopisz folder do `CLAUDE_CODE_PLUGIN_DIRS` w `~/.claude/settings.json` (kilka folderów oddzielasz `:`):
+Aktualizacja: `git pull && ./install.sh`. Inny folder docelowy: `./install.sh <folder>`; bez testów: `SKIP_TESTS=1 ./install.sh`.
+
+Przy pierwszej instalacji dopisz folder do `CLAUDE_CODE_PLUGIN_DIRS` w `~/.claude/settings.json` (kilka folderów oddzielasz `:`):
 
 ```json
 {
@@ -98,7 +102,7 @@ Wszystkie dane w testach są fikcyjne.
 
 A [Claude Code](https://claude.com/claude-code) mod for screen recording. `/rec on` masks secrets, personal data (with Polish identifiers: PESEL, NIP, IBAN/NRB, name declension) and money amounts in what the terminal shows, and denies Claude access to private files (`.env`, `~/.ssh`, keys, invoices, payroll…) until you run `/rec off`. Masking is display-only; the session history keeps the original. Messages and docs are in Polish.
 
-Install: clone into `~/.claude/mods/recording-mode`, add that folder to `CLAUDE_CODE_PLUGIN_DIRS` in `~/.claude/settings.json` (`env`), restart Claude Code. Configure with `/rec config`.
+Install: clone the repo and run `./install.sh` (runs the tests, then copies the mod to `~/.claude/mods/recording-mode`), add that folder to `CLAUDE_CODE_PLUGIN_DIRS` in `~/.claude/settings.json` (`env`), restart Claude Code. Configure with `/rec config`.
 
 It is a recording aid, not a security boundary: review your recording before publishing.
 
