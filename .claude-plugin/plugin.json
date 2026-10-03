@@ -1,0 +1,6 @@
+{
+  "name": "recording-mode",
+  "version": "0.1.0",
+  "description": "/rec przed nagrywaniem: maskuje sekrety, dane osobowe i kwoty na ekranie i zamyka prywatne pliki (/rec on|strict|off|config)",
+  "types": "./types/index.d.ts"
+}
