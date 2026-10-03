@@ -4,6 +4,18 @@ Mod do [Claude Code](https://claude.com/claude-code): `/rec on` przed nagrywanie
 
 *English summary below.*
 
+## Użycie
+
+| Komenda | Co robi |
+|---|---|
+| `/rec` | Pokazuje bieżący tryb i pomoc |
+| `/rec on` | Włącza tryb nagrywania |
+| `/rec strict` | Jak `on`, plus maskowanie procentów i wszystkich większych liczb |
+| `/rec off` | Wyłącza tryb; pokazuje, ile prób dostępu do prywatnych plików zablokowano |
+| `/rec config` | Tworzy / wczytuje plik konfiguracji (patrz niżej) |
+
+Tryb jest wspólny dla wszystkich sesji Claude Code i przetrwa restart, więc wyłącz go po nagraniu.
+
 ## Co robi
 
 Przy włączonym trybie (`/rec on`):
@@ -19,11 +31,11 @@ Przy włączonym trybie (`/rec on`):
 
 Maskowanie dotyczy tylko tego, co widać na ekranie. Oryginał zostaje w historii sesji i trafia do modelu bez zmian.
 
-`/rec strict` maskuje dodatkowo procenty i wszystkie większe liczby. `/rec off` wyłącza tryb i pokazuje, ile prób dostępu do prywatnych plików zablokowano.
-
 ## Instalacja
 
-Wymaga Claude Code z obsługą modów (testowane na 2.1.288).
+Wymagania:
+- Claude Code w wersji obsługującej mody (pluginy z hookami w TypeScript), testowane na **2.1.288**; sprawdzisz przez `claude --version`;
+- Linux, macOS albo WSL (`install.sh` to skrypt bash; na samym Windowsie skopiuj ręcznie foldery `hooks`, `types` i `.claude-plugin`).
 
 ```sh
 git clone https://github.com/hugo88/claude-code-recording-mode
@@ -44,6 +56,14 @@ Przy pierwszej instalacji dopisz folder do `CLAUDE_CODE_PLUGIN_DIRS` w `~/.claud
 ```
 
 i uruchom Claude Code ponownie. Na próbę bez zmian w ustawieniach: `claude --plugin-dir ~/.claude/mods/recording-mode`.
+
+**Sprawdzenie:** wpisz `/rec`: powinien pokazać tryb `off` i pomoc. Po `/rec on` w stopce przy polu wpisywania pojawi się `● REC ON`.
+
+### Odinstalowanie
+
+1. Usuń folder moda z `CLAUDE_CODE_PLUGIN_DIRS` w `~/.claude/settings.json`.
+2. `rm -rf ~/.claude/mods/recording-mode ~/.claude/mods-data/recording-mode`
+3. Jeśli dopisałeś wskaźnik do statusline, usuń ten fragment ze swojego skryptu.
 
 ### Wskaźnik w statusline (opcjonalnie)
 
