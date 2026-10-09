@@ -89,20 +89,12 @@ let mode: RecMode = 'off'
 let config: RecConfig = { ...EMPTY_CONFIG }
 let configRaw = ''
 let envValues: string[] = []
-let mask: Masker = (s) => s
-let cache = new Map<string, string>()
+let mask: Masker = (s) => s // makeMasker sam trzyma cache wyników
 let blocked = 0
 let noteSent = false
 const businessCalls = new Set<string>()
 
-const masked = (s: string): string => {
-  const hit = cache.get(s)
-  if (hit !== undefined) return hit
-  const out = mask(s)
-  if (cache.size > 3000) cache.clear()
-  cache.set(s, out)
-  return out
-}
+const masked = (s: string): string => mask(s)
 
 function rebuild() {
   mask =
@@ -116,7 +108,6 @@ function rebuild() {
           hide: config.hide,
           allow: config.allow,
         })
-  cache = new Map()
 }
 
 async function loadConfig($: EngineInterface): Promise<boolean> {

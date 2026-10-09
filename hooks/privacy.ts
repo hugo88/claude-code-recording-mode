@@ -369,6 +369,8 @@ export function makeMasker(opts: MaskerOptions = {}): Masker {
   const inflected = new Set<string>()
   let nameRe: RegExp | null = null
   let dirty = false
+  // wyniki maskowania; nowe nazwisko unieważnia wszystkie, bo tekst sprzed nauki mógł je zawierać
+  const cache = new Map<string, string>()
   const learn = (full: string, explicit = false) => {
     if (plain.size + inflected.size > 4000) return
     for (const f of nameForms(full, KEEP, explicit)) {
@@ -376,6 +378,7 @@ export function makeMasker(opts: MaskerOptions = {}): Masker {
       if (!set.has(f.text)) {
         set.add(f.text)
         dirty = true
+        cache.clear()
       }
     }
   }
@@ -399,6 +402,15 @@ export function makeMasker(opts: MaskerOptions = {}): Masker {
 
   return function mask(text: string): string {
     if (typeof text !== 'string' || text.length === 0) return text
+    const hit = cache.get(text)
+    if (hit !== undefined) return hit
+    const out = maskOnce(text)
+    if (cache.size > 3000) cache.clear()
+    cache.set(text, out)
+    return out
+  }
+
+  function maskOnce(text: string): string {
     let out = text
 
     // wyjątki: zamieniane na znaczniki z prywatnego obszaru Unicode, przywracane na końcu

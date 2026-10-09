@@ -117,3 +117,15 @@ test('maskuje wiersze tylko przy włączonym trybie; wskaźnik w stopce', async 
   expect(await desk.find({ type: 'Text', text: '● REC STRICT' })).toBeDefined()
   await desk.unmount()
 })
+
+test('nazwisko wyuczone z e-maila maskuje też tekst narysowany wcześniej (bez starego cache)', async ($, on) => {
+  world(on, {})
+  await $.session.start({ cwd: CWD, surface: 'terminal', isInteractive: true })
+  await rec($, 'on')
+  const draw = async (text: string) =>
+    JSON.stringify(await $.ui.render({ component: 'AssistantMessage', surface: 'terminal', requestId: 'm', props: { text, isFirstOfReply: true } } as never))
+  const before = 'Rozmawiałem z Zofią Wiśniewską'
+  expect(await draw(before)).toContain('Wiśniewsk') // jeszcze nieznana
+  await draw('Od: zofia.wisniewska@example.org')
+  expect(await draw(before)).not.toContain('Wiśniewsk')
+})
