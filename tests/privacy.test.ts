@@ -102,6 +102,8 @@ describe('dane osobowe (PL)', () => {
 
   test('autor i fałszywe trafienia', () => {
     hidden('author: Kurt Buhler', 'Buhler', makeMasker())
+    hidden('Authorization: 5f3c9a7e1b2d4c6a8e0f', '5f3c9a7e', makeMasker())
+    hidden('authorization=5f3c9a7e1b2d4c6a8e0f', '5f3c9a7e', makeMasker())
     expect(mask('Do: sprawdzić backup PBS')).toBe('Do: sprawdzić backup PBS')
     hidden('Do: Marta Przykładowa', 'Przykładowa', makeMasker())
     expect(mask('net 500')).not.toContain('500')

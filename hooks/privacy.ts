@@ -58,7 +58,7 @@ const URL_CREDENTIALS = /\b([a-z][a-z0-9+.-]*:\/\/[^\s:/@]+:)([^\s@/]{3,})(@)/gi
 
 // NAZWA=wartość, "nazwa": "wartość", hasło: wartość
 const ASSIGNMENT =
-  /((?<![\p{L}])[\p{L}0-9_.-]*(?:API[_-]?KEY|APIKEY|SECRET|TOKEN|PASSWORD|PASSWD|PASSPHRASE|HAS[ŁL]O|HAS[ŁL]A|PWD|PRIVATE[_-]?KEY|ACCESS[_-]?KEY|CLIENT[_-]?SECRET|CREDENTIALS?|COOKIE|SESSION[_-]?ID|AUTH(?!OR))[\p{L}0-9_.-]*)(["']?\s*[=:]\s*["']?)([^\s"'`,;}{]{4,})/giu
+  /((?<![\p{L}])[\p{L}0-9_.-]*(?:API[_-]?KEY|APIKEY|SECRET|TOKEN|PASSWORD|PASSWD|PASSPHRASE|HAS[ŁL]O|HAS[ŁL]A|PWD|PRIVATE[_-]?KEY|ACCESS[_-]?KEY|CLIENT[_-]?SECRET|CREDENTIALS?|COOKIE|SESSION[_-]?ID|AUTH(?!ORS?(?![\p{L}])))[\p{L}0-9_.-]*)(["']?\s*[=:]\s*["']?)([^\s"'`,;}{]{4,})/giu
 
 const PIN = /((?<![\p{L}])(?:PIN|CVV2?|CVC2?|kod PIN|kod CVV)[ \t]*[:=][ \t]*)(\d{3,8})(?!\d)/giu
 
