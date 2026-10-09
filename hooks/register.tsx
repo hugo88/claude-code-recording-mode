@@ -299,7 +299,12 @@ export const register: Register = (on) => {
     }
     if (businessSource(e.tool, args, config.businessTools)) businessCalls.add(e.tool_use_id)
     return next(e)
-  })
+  }).catch(($, e, next) =>
+    // bez handlera silnik pomija hook, który padł, i narzędzie rusza: podczas nagrywania odmawiamy
+    mode === 'off' || next.called
+      ? next(e)
+      : { deny: `Recording mode is on and its file check failed, so ${e.tool} did not run. Try again, or ask the user to run /rec off first.` },
+  )
 
   // Wiersze tekstowe: prompty, odpowiedzi, wyjście komend
   on('ui.render', { component: ['UserMessage', 'AssistantMessage', 'CommandOutput'] }, async ($, e, next) => {
