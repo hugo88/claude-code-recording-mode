@@ -74,13 +74,13 @@ const DISPLAY_NAME = new RegExp(
 )
 const PERSON_KEY =
   /("(?:displayName|display_name|fullName|full_name|firstName|first_name|lastName|last_name|givenName|given_name|familyName|family_name|real_name|realName|senderName|sender_name|authorName|author_name|username|user_name|imie|imię|nazwisko|imie_nazwisko)"\s*:\s*")([^"]{1,80})(")/gu
-const PERSON_LINE = new RegExp(
-  '^([ \\t>*-]*(?:From|To|Cc|Bcc|Reply-To|Attendees?|Organizer|Invitees?|Guests?|Assignees?|Sender|Owner|Full name|Contact|Customer|' +
-    'Od|Do|DW|UDW|Nadawca|Odbiorca|Adresat|Klient|Kontrahent|Właściciel|Uczestnicy|Uczestnik|Organizator|Zaproszeni|Przypisan[ya]|' +
-    'Imię i nazwisko|Imie i nazwisko|Imię|Nazwisko|Adres(?: zamieszkania| zameldowania| do korespondencji)?|Osoba kontaktowa|Kontakt|Pracownik|Pacjent)' +
-    '[ \\t]*:[ \\t]*)(\\S.*)$',
-  'gmu',
-)
+const PERSON_LABEL =
+  '(?:From|To|Cc|Bcc|Reply-To|Attendees?|Organizer|Invitees?|Guests?|Assignees?|Sender|Owner|Full name|Contact|Customer|' +
+  'Od|Do|DW|UDW|Nadawca|Odbiorca|Adresat|Klient|Kontrahent|Właściciel|Uczestnicy|Uczestnik|Organizator|Zaproszeni|Przypisan[ya]|' +
+  'Imię i nazwisko|Imie i nazwisko|Imię|Nazwisko|Adres(?: zamieszkania| zameldowania| do korespondencji)?|Osoba kontaktowa|Kontakt|Pracownik|Pacjent)'
+const PERSON_LINE = new RegExp(`^([ \\t>*-]*${PERSON_LABEL}[ \\t]*:[ \\t]*)(\\S.*)$`, 'gmu')
+// ta sama etykieta w komórce tabeli markdown: "| Owner: Jan Nowak |"; wartość do końca komórki
+const PERSON_CELL = new RegExp(`(\\|[ \\t]*${PERSON_LABEL}[ \\t]*:[ \\t]*)([^|\\n]*[^|\\s])`, 'gu')
 
 // ---------------------------------------------------------------- dane osobowe
 
@@ -444,6 +444,9 @@ export function makeMasker(opts: MaskerOptions = {}): Masker {
     })
     out = out.replace(PERSON_LINE, (line: string, label: string, value: string) =>
       KEEP.has(value.trim()) ? line : label + HIDE,
+    )
+    out = out.replace(PERSON_CELL, (cell: string, label: string, value: string) =>
+      KEEP.has(value.trim()) ? cell : label + HIDE,
     )
     out = out.replace(EMAIL, '•••@•••')
     const re = nameRegex()

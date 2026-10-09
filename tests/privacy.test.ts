@@ -94,6 +94,12 @@ describe('dane osobowe (PL)', () => {
     expect(out).toContain('Faktura:')
   })
 
+  test('etykiety w komórkach tabeli markdown', () => {
+    const out = hidden('| Zadanie | Osoba |\n|---|---|\n| backup | Owner: Tomasz Zieliński |', 'Zieliński')
+    expect(out).toContain('| Owner: ••• |')
+    expect(out).toContain('| Zadanie | Osoba |')
+  })
+
   test('wartości z konfiguracji (tekst i regex)', () => {
     hidden('Status Projekt Kormoran: zielony', 'Kormoran')
     hidden('zlecenie ZLEC-4821 gotowe', 'ZLEC-4821')
