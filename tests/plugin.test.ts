@@ -129,3 +129,12 @@ test('nazwisko wyuczone z e-maila maskuje też tekst narysowany wcześniej (bez 
   await draw('Od: zofia.wisniewska@example.org')
   expect(await draw(before)).not.toContain('Wiśniewsk')
 })
+
+test('zwinięta grupa narzędzi: argumenty maskowane', async ($, on) => {
+  world(on, {})
+  await $.session.start({ cwd: CWD, surface: 'terminal', isInteractive: true })
+  await rec($, 'on')
+  const calls = [{ tool: 'Grep', input: { pattern: 'jan.kowalski@example.com' }, isRunning: false, isErrored: false, isInterrupted: false }]
+  const shown = JSON.stringify(await $.ui.render({ component: 'ToolGroup', surface: 'terminal', requestId: 'g', props: { calls, isActive: false, isExpanded: false } } as never))
+  expect(shown.includes('kowalski@')).toBe(false)
+})

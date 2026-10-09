@@ -58,7 +58,7 @@ const URL_CREDENTIALS = /\b([a-z][a-z0-9+.-]*:\/\/[^\s:/@]+:)([^\s@/]{3,})(@)/gi
 
 // NAZWA=wartość, "nazwa": "wartość", hasło: wartość
 const ASSIGNMENT =
-  /((?<![\p{L}])[\p{L}0-9_.-]*(?:API[_-]?KEY|APIKEY|SECRET|TOKEN|PASSWORD|PASSWD|PASSPHRASE|HAS[ŁL]O|HAS[ŁL]A|PWD|PRIVATE[_-]?KEY|ACCESS[_-]?KEY|CLIENT[_-]?SECRET|CREDENTIALS?|COOKIE|SESSION[_-]?ID|AUTH)[\p{L}0-9_.-]*)(["']?\s*[=:]\s*["']?)([^\s"'`,;}{]{4,})/giu
+  /((?<![\p{L}])[\p{L}0-9_.-]*(?:API[_-]?KEY|APIKEY|SECRET|TOKEN|PASSWORD|PASSWD|PASSPHRASE|HAS[ŁL]O|HAS[ŁL]A|PWD|PRIVATE[_-]?KEY|ACCESS[_-]?KEY|CLIENT[_-]?SECRET|CREDENTIALS?|COOKIE|SESSION[_-]?ID|AUTH(?!OR))[\p{L}0-9_.-]*)(["']?\s*[=:]\s*["']?)([^\s"'`,;}{]{4,})/giu
 
 const PIN = /((?<![\p{L}])(?:PIN|CVV2?|CVC2?|kod PIN|kod CVV)[ \t]*[:=][ \t]*)(\d{3,8})(?!\d)/giu
 
@@ -75,8 +75,8 @@ const DISPLAY_NAME = new RegExp(
 const PERSON_KEY =
   /("(?:displayName|display_name|fullName|full_name|firstName|first_name|lastName|last_name|givenName|given_name|familyName|family_name|real_name|realName|senderName|sender_name|authorName|author_name|username|user_name|imie|imię|nazwisko|imie_nazwisko)"\s*:\s*")([^"]{1,80})(")/gu
 const PERSON_LABEL =
-  '(?:From|To|Cc|Bcc|Reply-To|Attendees?|Organizer|Invitees?|Guests?|Assignees?|Sender|Owner|Full name|Contact|Customer|' +
-  'Od|Do|DW|UDW|Nadawca|Odbiorca|Adresat|Klient|Kontrahent|Właściciel|Uczestnicy|Uczestnik|Organizator|Zaproszeni|Przypisan[ya]|' +
+  '(?:From|To|Cc|Bcc|Reply-To|Attendees?|Organizer|Invitees?|Guests?|Assignees?|Sender|Owner|[Aa]uthor|Full name|Contact|Customer|' +
+  'Od|Do|DW|UDW|[Aa]utor|Nadawca|Odbiorca|Adresat|Klient|Kontrahent|Właściciel|Uczestnicy|Uczestnik|Organizator|Zaproszeni|Przypisan[ya]|' +
   'Imię i nazwisko|Imie i nazwisko|Imię|Nazwisko|Adres(?: zamieszkania| zameldowania| do korespondencji)?|Osoba kontaktowa|Kontakt|Pracownik|Pacjent)'
 const PERSON_LINE = new RegExp(`^([ \\t>*-]*${PERSON_LABEL}[ \\t]*:[ \\t]*)(\\S.*)$`, 'gmu')
 // ta sama etykieta w komórce tabeli markdown: "| Owner: Jan Nowak |"; wartość do końca komórki
@@ -137,7 +137,7 @@ const MONEY_POST = new RegExp(
 
 // Liczby obok słów biznesowych: "przychód 84 tys.", "marża 40%", "MRR is 84k"
 const FIN_WORD = new RegExp(
-  '(?<![\\p{L}])(?:' +
+  '(?<![\\p{L}.])(?:' +
     'revenues?|mrr|arr|gmv|profits?|profit share|margins?|ebitda|income|earnings|payroll|salar(?:y|ies)|wages?|compensation|comp|bonus(?:es)?|equity|stakes?|ownership|valuation|runway|burn(?: rate)?|cash(?:flow)?|balances?|budgets?|spend(?:ing)?|pric(?:e|es|ing)|fees?|invoices?|payouts?|distributions?|dividends?|tax(?:es)?|sales|ltv|cac|aov|sponsor(?:s|ships?)?|cpm|rpm|retainers?|commissions?|royalt(?:y|ies)|refunds?|expenses?|debts?|loans?|funding|investments?|deals?|net|gross|paid|pays?|owed?|costs?|' +
     'przych[oó]d\\p{L}*|obr[oó]t\\p{L}*|obrot\\p{L}*|zysk\\p{L}*|strat[aęy]?|marż\\p{L}*|marz[ay]|doch[oó]d\\p{L}*|wynagrodze\\p{L}*|pensj\\p{L}*|płac\\p{L}*|wypłat\\p{L}*|budżet\\p{L}*|budzet\\p{L}*|koszt\\p{L}*|cen[aęyi]?|cenni\\p{L}*|faktur\\p{L}*|kwot\\p{L}*|sald[oa]|stan konta|kredyt\\p{L}*|pożyczk\\p{L}*|dług\\p{L}*|zadłużen\\p{L}*|inwestycj\\p{L}*|wycen\\p{L}*|premi\\p{L}*|prowizj\\p{L}*|podat\\p{L}*|vat|netto|brutto|sprzedaż\\p{L}*|sprzedaz\\p{L}*|wydatk\\p{L}*|wydatek|opłat\\p{L}*|rabat\\p{L}*|stawk\\p{L}*|dywidend\\p{L}*|udział\\p{L}*|kapitał\\p{L}*|oszczędnoś\\p{L}*|należnoś\\p{L}*|zobowiąza\\p{L}*' +
     ')(?![\\p{L}])',
@@ -442,11 +442,13 @@ export function makeMasker(opts: MaskerOptions = {}): Masker {
       learn(value)
       return head + (KEEP.has(value) ? value : HIDE) + tail
     })
+    // "Do: sprawdzić backup" to nie adresat: po "Do:" maskujemy tylko wartość od wielkiej litery
+    const notPerson = (label: string, value: string) => /(?:^|[\s|>*-])Do[ \t]*:/.test(label) && !/^["'\p{Lu}]/u.test(value)
     out = out.replace(PERSON_LINE, (line: string, label: string, value: string) =>
-      KEEP.has(value.trim()) ? line : label + HIDE,
+      KEEP.has(value.trim()) || notPerson(label, value) ? line : label + HIDE,
     )
     out = out.replace(PERSON_CELL, (cell: string, label: string, value: string) =>
-      KEEP.has(value.trim()) ? cell : label + HIDE,
+      KEEP.has(value.trim()) || notPerson(label, value) ? cell : label + HIDE,
     )
     out = out.replace(EMAIL, '•••@•••')
     const re = nameRegex()

@@ -1,0 +1,13 @@
+{
+  "name": "claude-code-recording-mode",
+  "description": "Recording mode dla Claude Code: maskowanie danych na ekranie podczas nagrywania",
+  "owner": {
+    "name": "hugo88"
+  },
+  "plugins": [
+    {
+      "name": "recording-mode",
+      "source": "./"
+    }
+  ]
+}

@@ -334,6 +334,15 @@ export const register: Register = (on) => {
     return next({ ...e, props: { ...e.props, output: deepMask(e.props.output, business ? hideText : masked) } })
   })
 
+  // Zwinięta grupa odczytów i wyszukiwań: ścieżki i wzorce w argumentach
+  on('ui.render', { component: 'ToolGroup' }, async ($, e, next) => {
+    const m = await read($, modeAtom)
+    await read($, configVersion)
+    if (m === 'off') return next(e)
+    const calls = e.props.calls.map((c) => ({ ...c, input: deepMask(c.input, masked) }))
+    return next({ ...e, props: { ...e.props, calls } })
+  })
+
   // Pytania Claude’a (AskUserQuestion) też mogą zawierać dane
   on('ui.render', { component: 'AskUserQuestion' }, async ($, e, next) => {
     const m = await read($, modeAtom)

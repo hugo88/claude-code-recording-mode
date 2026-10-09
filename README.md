@@ -33,9 +33,19 @@ Maskowanie dotyczy tylko tego, co widać na ekranie. Oryginał zostaje w histori
 
 ## Instalacja
 
-Wymagania:
-- Claude Code w wersji obsługującej mody (pluginy z hookami w TypeScript), testowane na **2.1.288**; sprawdzisz przez `claude --version`;
-- Linux, macOS albo WSL (`install.sh` to skrypt bash; na samym Windowsie skopiuj ręcznie foldery `hooks`, `types` i `.claude-plugin`).
+Wymagania: Claude Code w wersji obsługującej mody (pluginy z hookami w TypeScript), testowane na **2.1.288** i **2.1.295**; sprawdzisz przez `claude --version`.
+
+Najprościej, wpisane w Claude Code (od 2.1.275):
+
+```
+/plugin install recording-mode --marketplace hugo88/claude-code-recording-mode
+```
+
+potwierdź dodanie marketplace (`y`) i wybierz zakres (Enter = użytkownik). Mod działa od razu. Aktualizacja: `claude plugin update recording-mode`.
+
+### Instalacja z klonu repozytorium
+
+Linux, macOS albo WSL (`install.sh` to skrypt bash; na samym Windowsie skopiuj ręcznie foldery `hooks`, `types` i `.claude-plugin`).
 
 ```sh
 git clone https://github.com/hugo88/claude-code-recording-mode
@@ -60,6 +70,8 @@ i uruchom Claude Code ponownie. Na próbę bez zmian w ustawieniach: `claude --p
 **Sprawdzenie:** wpisz `/rec`: powinien pokazać tryb `off` i pomoc. Po `/rec on` w stopce przy polu wpisywania pojawi się `● REC ON`.
 
 ### Odinstalowanie
+
+Zainstalowany przez `/plugin install`: `claude plugin uninstall recording-mode`, potem punkt 2 (tylko `mods-data`). Z klonu:
 
 1. Usuń folder moda z `CLAUDE_CODE_PLUGIN_DIRS` w `~/.claude/settings.json`.
 2. `rm -rf ~/.claude/mods/recording-mode ~/.claude/mods-data/recording-mode`
@@ -104,6 +116,10 @@ To pomoc przy nagrywaniu, nie zabezpieczenie. Przed publikacją nagrania i tak j
 - Nie są maskowane: pole wpisywania, okna zgody na komendy, panele innych modów.
 - Blokada ścieżek to deny-lista: `grep -r` po katalogu, twarde dowiązania czy skrypty ją obejdą. Twarda ochrona to `permissions.deny` w ustawieniach Claude Code.
 - Słowa biznesowe blokują tylko tokeny wyglądające na ścieżkę (`/`, `\` albo rozszerzenie); katalog wpisany bez ukośnika dopisz do `privatePaths`.
+- Wiersze, które terminal już wypisał przed `/rec on`, mogą zostać na ekranie bez maskowania (poza trybem fullscreen terminal ich nie przerysowuje). Włącz tryb przed sesją albo zrób `/clear`.
+- Blokada `.env` patrzy na całe polecenie, więc odmówi też np. `git commit -m "fix .env loading"`.
+- Podczas nagrywania Claude nie czyta też swojej pamięci (`~/.claude/projects/*/memory`).
+- Nazwiska w tabelach są maskowane tylko z etykietą w tej samej komórce (`| Owner: Jan |`), nie po nagłówku kolumny.
 - Nietypową odmianę imion (Marek → Marka) trzeba dopisać ręcznie w `names`.
 
 ## Rozwój
@@ -122,7 +138,7 @@ Wszystkie dane w testach są fikcyjne.
 
 A [Claude Code](https://claude.com/claude-code) mod for screen recording. `/rec on` masks secrets, personal data (with Polish identifiers: PESEL, NIP, IBAN/NRB, name declension) and money amounts in what the terminal shows, and denies Claude access to private files (`.env`, `~/.ssh`, keys, invoices, payroll…) until you run `/rec off`. Masking is display-only; the session history keeps the original. Messages and docs are in Polish.
 
-Install: clone the repo and run `./install.sh` (runs the tests, then copies the mod to `~/.claude/mods/recording-mode`), add that folder to `CLAUDE_CODE_PLUGIN_DIRS` in `~/.claude/settings.json` (`env`), restart Claude Code. Configure with `/rec config`.
+Install: `/plugin install recording-mode --marketplace hugo88/claude-code-recording-mode` in Claude Code, or clone the repo and run `./install.sh` (runs the tests, then copies the mod to `~/.claude/mods/recording-mode`), add that folder to `CLAUDE_CODE_PLUGIN_DIRS` in `~/.claude/settings.json` (`env`), restart Claude Code. Configure with `/rec config`.
 
 It is a recording aid, not a security boundary: review your recording before publishing.
 

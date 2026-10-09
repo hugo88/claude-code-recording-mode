@@ -100,6 +100,14 @@ describe('dane osobowe (PL)', () => {
     expect(out).toContain('| Zadanie | Osoba |')
   })
 
+  test('autor i fałszywe trafienia', () => {
+    hidden('author: Kurt Buhler', 'Buhler', makeMasker())
+    expect(mask('Do: sprawdzić backup PBS')).toBe('Do: sprawdzić backup PBS')
+    hidden('Do: Marta Przykładowa', 'Przykładowa', makeMasker())
+    expect(mask('net 500')).not.toContain('500')
+    expect(mask('.NET 8 i C#')).toBe('.NET 8 i C#')
+  })
+
   test('wartości z konfiguracji (tekst i regex)', () => {
     hidden('Status Projekt Kormoran: zielony', 'Kormoran')
     hidden('zlecenie ZLEC-4821 gotowe', 'ZLEC-4821')
