@@ -334,13 +334,12 @@ export const register: Register = (on) => {
     return next({ ...e, props: { ...e.props, output: deepMask(e.props.output, business ? hideText : masked) } })
   })
 
-  // Zwinięta grupa odczytów i wyszukiwań: ścieżki i wzorce w argumentach
+  // Zwinięta grupa odczytów i wyszukiwań: silnik rysuje ją z własnych danych (przepisane `calls`
+  // nie trafiają na ekran), więc podczas nagrywania rozwijamy ją na wiersze ToolUse, maskowane wyżej
   on('ui.render', { component: 'ToolGroup' }, async ($, e, next) => {
     const m = await read($, modeAtom)
-    await read($, configVersion)
-    if (m === 'off') return next(e)
-    const calls = e.props.calls.map((c) => ({ ...c, input: deepMask(c.input, masked) }))
-    return next({ ...e, props: { ...e.props, calls } })
+    if (m === 'off' || e.props.isExpanded) return next(e)
+    return next({ ...e, props: { ...e.props, isExpanded: true } })
   })
 
   // Pytania Claude’a (AskUserQuestion) też mogą zawierać dane

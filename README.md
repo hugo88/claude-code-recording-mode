@@ -27,6 +27,7 @@ Przy włączonym trybie (`/rec on`):
   - kwoty i liczby przy słowach biznesowych (przychód, pensja, faktura, budżet…).
 - **Zamyka prywatne pliki**: `.env`, `~/.ssh`, `~/.aws`, klucze, `credentials.json`, pliki i katalogi typu `faktury/`, `payroll.csv`, `budżet.xlsx`. Claude dostaje odmowę, zanim narzędzie ruszy (także przez dowiązania symboliczne i globy typu `cat .en*`).
 - **Pokazuje wskaźnik** `● REC` w stopce przy polu wpisywania i (opcjonalnie) w statusline.
+- **Rozwija zwinięte grupy narzędzi** ("Read 3 files…") na osobne wiersze, bo tylko te da się zamaskować; transkrypt jest przez to dłuższy.
 - Opcjonalnie dodaje do każdego promptu notkę, żeby Claude sam unikał danych wrażliwych w odpowiedziach.
 
 Maskowanie dotyczy tylko tego, co widać na ekranie. Oryginał zostaje w historii sesji i trafia do modelu bez zmian.
